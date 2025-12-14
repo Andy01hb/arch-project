@@ -12,7 +12,7 @@ const handleAuth = async () => {
 };
 
 export const ourFileRouter = {
-    imageUploader: f({ image: { maxFileSize: "4MB" } })
+    imageUploader: f({ image: { maxFileSize: "8MB" } })
         .middleware(async () => await handleAuth())
         .onUploadComplete(async ({ metadata, file }) => {
             console.log("Upload complete for userId:", metadata.userId);
