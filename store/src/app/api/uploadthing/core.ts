@@ -1,3 +1,5 @@
+process.env.UPLOADTHING_TOKEN = "eyJhcGlLZXkiOiJza19saXZlX2VhYTZlYjlhZWI4NTMwNzNlZmE3YTI3MDhkMzY4M2FjOGRjZWIwYjhlZjlmZGM2ZGZlNGY2NjEzZjg4NGIzNjIiLCJhcHBJZCI6IjBpZ2pmZGNpZ3QiLCJyZWdpb25zIjpbInNlYTEiXX0=";
+
 import { createUploadthing, type FileRouter } from "uploadthing/next";
 import { auth } from "@clerk/nextjs/server";
 
