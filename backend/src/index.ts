@@ -31,10 +31,7 @@ const limiter = rateLimit({
 app.use(limiter);
 
 // CORS Configuration
-app.use(cors({
-    origin: process.env.FRONTEND_URL || 'http://localhost:3000',
-    credentials: true
-}));
+app.use(cors());
 app.use(express.json({
     verify: (req: any, res, buf) => {
         if (req.originalUrl.startsWith('/api/payment/webhook')) {
