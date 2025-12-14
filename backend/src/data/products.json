@@ -1,0 +1,29 @@
+[
+    {
+        "id": "1",
+        "name": "Bloque Dinámico: Puerta Residencial",
+        "description": "Puerta abatible con parámetros de ancho, alto y tipo de marco. Incluye vista en planta y alzado.",
+        "price": 4.99,
+        "category": "Arquitectura",
+        "image": "/images/door_preview.jpg",
+        "fileUrl": "protected/door_v1.dwg"
+    },
+    {
+        "id": "2",
+        "name": "Set de Vegetación 2D",
+        "description": "Colección de 50 árboles y arbustos en vista planta y alzado. Bloques escalables.",
+        "price": 12.50,
+        "category": "Paisajismo",
+        "image": "/images/trees_preview.jpg",
+        "fileUrl": "protected/trees_set.dwg"
+    },
+    {
+        "id": "3",
+        "name": "Detalle Estructural: Zapata Aislada",
+        "description": "Detalle constructivo de zapata aislada con armado parametrico.",
+        "price": 8.00,
+        "category": "Estructura",
+        "image": "/images/footing_preview.jpg",
+        "fileUrl": "protected/footing.dwg"
+    }
+]
