@@ -216,3 +216,7 @@ taskkill /PID <PID> /F
 - Install REST client (Postman, Insomnia) for API testing
 - Enable React DevTools for debugging frontend
 - Check backend logs for API errors
+
+
+
+.
