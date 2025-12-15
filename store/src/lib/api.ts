@@ -1,4 +1,4 @@
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
+const API_URL = 'https://arch-backend-90c5.onrender.com/api';
 
 export interface Product {
     id: string;
