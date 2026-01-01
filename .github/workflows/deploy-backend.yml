@@ -1,0 +1,73 @@
+name: Deploy Backend to Render
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'backend/**'
+      - '.github/workflows/deploy-backend.yml'
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    name: Deploy to Render
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Notify deployment start
+      run: |
+        echo "🚀 Starting deployment to Render"
+        echo "Commit: ${{ github.sha }}"
+        echo "Author: ${{ github.actor }}"
+    
+    - name: Wait for Render auto-deploy
+      run: |
+        echo "⏳ Render will auto-deploy from GitHub"
+        echo "Monitor at: https://dashboard.render.com"
+        sleep 30
+    
+    - name: Health check
+      run: |
+        echo "🏥 Checking backend health..."
+        max_attempts=10
+        attempt=0
+        
+        while [ $attempt -lt $max_attempts ]; do
+          if curl -f https://arch-backend-90c5.onrender.com/api/health; then
+            echo "✅ Backend is healthy!"
+            exit 0
+          fi
+          
+          attempt=$((attempt + 1))
+          echo "Attempt $attempt/$max_attempts failed, retrying in 30s..."
+          sleep 30
+        done
+        
+        echo "❌ Health check failed after $max_attempts attempts"
+        exit 1
+    
+    - name: Test critical endpoints
+      run: |
+        echo "🧪 Testing critical endpoints..."
+        
+        # Test products endpoint
+        if curl -f https://arch-backend-90c5.onrender.com/api/products; then
+          echo "✅ Products endpoint OK"
+        else
+          echo "❌ Products endpoint failed"
+          exit 1
+        fi
+        
+        echo "✅ All endpoints responding"
+    
+    - name: Deployment summary
+      if: always()
+      run: |
+        echo "📊 Deployment Summary"
+        echo "===================="
+        echo "Status: ${{ job.status }}"
+        echo "Backend URL: https://arch-backend-90c5.onrender.com"
+        echo "Health Check: https://arch-backend-90c5.onrender.com/api/health"

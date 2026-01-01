@@ -1,0 +1,97 @@
+name: Database Migration
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Target environment'
+        required: true
+        default: 'production'
+        type: choice
+        options:
+          - production
+          - staging
+          - development
+      migration_file:
+        description: 'Migration file to run (leave empty for schema.sql)'
+        required: false
+        default: 'schema.sql'
+
+jobs:
+  migrate:
+    name: Run Database Migration
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.environment }}
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Setup PostgreSQL Client
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y postgresql-client
+    
+    - name: Validate migration file
+      run: |
+        MIGRATION_FILE="backend/database/${{ github.event.inputs.migration_file }}"
+        if [ ! -f "$MIGRATION_FILE" ]; then
+          echo "❌ Migration file not found: $MIGRATION_FILE"
+          exit 1
+        fi
+        echo "✅ Migration file found: $MIGRATION_FILE"
+    
+    - name: Backup database (optional)
+      run: |
+        echo "💾 Creating backup..."
+        # Uncomment to enable backups
+        # pg_dump ${{ secrets.DATABASE_URL }} > backup_$(date +%Y%m%d_%H%M%S).sql
+        echo "⚠️ Backup disabled - enable in workflow if needed"
+    
+    - name: Run migration
+      env:
+        DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      run: |
+        echo "🔄 Running migration..."
+        MIGRATION_FILE="backend/database/${{ github.event.inputs.migration_file }}"
+        
+        if psql "$DATABASE_URL" -f "$MIGRATION_FILE"; then
+          echo "✅ Migration completed successfully"
+        else
+          echo "❌ Migration failed"
+          exit 1
+        fi
+    
+    - name: Verify migration
+      env:
+        DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      run: |
+        echo "🔍 Verifying database state..."
+        
+        # Check tables exist
+        psql "$DATABASE_URL" -c "
+          SELECT table_name 
+          FROM information_schema.tables 
+          WHERE table_schema = 'public'
+          ORDER BY table_name;
+        "
+        
+        # Count records
+        psql "$DATABASE_URL" -c "
+          SELECT 
+            'products' as table_name, COUNT(*) as count FROM products
+          UNION ALL
+          SELECT 'orders', COUNT(*) FROM orders
+          UNION ALL
+          SELECT 'order_items', COUNT(*) FROM order_items;
+        "
+    
+    - name: Migration summary
+      if: always()
+      run: |
+        echo "📊 Migration Summary"
+        echo "===================="
+        echo "Environment: ${{ github.event.inputs.environment }}"
+        echo "Migration File: ${{ github.event.inputs.migration_file }}"
+        echo "Status: ${{ job.status }}"
+        echo "Executed by: ${{ github.actor }}"
