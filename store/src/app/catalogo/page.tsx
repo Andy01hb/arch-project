@@ -18,18 +18,44 @@ export default function CatalogoPage() {
 
     useEffect(() => {
         async function fetchProducts() {
+            setLoading(true);
+            setError(null);
+
+            let url = process.env.NEXT_PUBLIC_API_URL || 'https://arch-backend-90c5.onrender.com/api';
+
+            // Heuristic: If URL doesn't end in /api and doesn't look like a full path, append /api
+            if (!url.endsWith('/api') && !url.includes('/api/')) {
+                console.warn('API URL might be missing /api suffix, appending it:', url);
+                url = `${url.replace(/\/$/, '')}/api`;
+            }
+
+            console.log('Fetching catalog from:', url);
+
             try {
-                setLoading(true);
-                const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://arch-backend-90c5.onrender.com/api';
-                const response = await fetch(`${apiUrl}/products`);
+                const response = await fetch(`${url}/products`);
 
                 if (!response.ok) {
-                    throw new Error('Could not load catalog');
+                    throw new Error(`Server responded with ${response.status}`);
                 }
 
                 const data = await response.json();
                 setProducts(data);
             } catch (err) {
+                console.error('Fetch error:', err);
+                // Smart Retry: If strict env var failed, try the hardcoded production URL as backup
+                if (url !== 'https://arch-backend-90c5.onrender.com/api') {
+                    console.log('Retrying with fallback production URL...');
+                    try {
+                        const backupResponse = await fetch('https://arch-backend-90c5.onrender.com/api/products');
+                        if (backupResponse.ok) {
+                            const backupData = await backupResponse.json();
+                            setProducts(backupData);
+                            return; // Success on retry
+                        }
+                    } catch (retryErr) {
+                        console.error('Retry failed:', retryErr);
+                    }
+                }
                 setError(err instanceof Error ? err.message : 'Unknown error');
             } finally {
                 setLoading(false);
