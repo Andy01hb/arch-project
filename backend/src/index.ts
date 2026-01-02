@@ -17,6 +17,9 @@ const app = express();
 const port = process.env.PORT || 3001;
 
 
+// Trust proxy - Required for Render deployment
+app.set('trust proxy', true);
+
 // Security & Performance Middleware
 app.use(helmet());
 app.use(compression());
@@ -30,8 +33,30 @@ const limiter = rateLimit({
 });
 app.use(limiter);
 
-// CORS Configuration
-app.use(cors());
+// CORS Configuration - Allow Vercel frontend
+const allowedOrigins = [
+    process.env.FRONTEND_URL,
+    'https://arch-project-git-main-andy01hbs-projects.vercel.app',
+    'https://archproject-git-main-andy01hbs-projects.vercel.app',
+    'http://localhost:3000', // Local development
+].filter(Boolean);
+
+app.use(cors({
+    origin: (origin, callback) => {
+        // Allow requests with no origin (like mobile apps or curl requests)
+        if (!origin) return callback(null, true);
+
+        if (allowedOrigins.some(allowed => origin.startsWith(allowed as string))) {
+            callback(null, true);
+        } else {
+            logger.warn(`CORS blocked origin: ${origin}`);
+            callback(null, true); // Allow for now, log for monitoring
+        }
+    },
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+}));
 app.use(express.json({
     verify: (req: any, res, buf) => {
         if (req.originalUrl.startsWith('/api/payment/webhook')) {

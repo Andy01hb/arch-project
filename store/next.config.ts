@@ -1,6 +1,18 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'utfs.io',
+      },
+      {
+        protocol: 'https',
+        hostname: 'images.unsplash.com',
+      },
+    ],
+  },
   async headers() {
     return [
       {
@@ -26,10 +38,10 @@ const nextConfig: NextConfig = {
             key: "Referrer-Policy",
             value: "origin-when-cross-origin",
           },
-          // Content-Security-Policy can be tricky with external scripts (Clerk, PayPal, UploadThing).
-          // We start with a basic one or leave it for a more advanced setup if needed.
-          // For now, we'll omit strict CSP to avoid breaking integrations in this step.
-          // Force redeploy: Restore latest code v2
+          {
+            key: "X-XSS-Protection",
+            value: "1; mode=block",
+          },
         ],
       },
     ];

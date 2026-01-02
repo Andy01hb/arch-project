@@ -1,8 +1,19 @@
 import { getProducts } from '@/lib/products';
 import ProductCard from '@/components/ui/ProductCard';
 
+// Revalidate every 60 seconds for fresh product data
+export const revalidate = 60;
+
 export default async function Home() {
-  const products = await getProducts();
+  let products = [];
+  let error = null;
+
+  try {
+    products = await getProducts();
+  } catch (e) {
+    console.error('Failed to fetch products:', e);
+    error = 'No se pudieron cargar los productos. Por favor, intenta más tarde.';
+  }
 
   return (
     <main>
