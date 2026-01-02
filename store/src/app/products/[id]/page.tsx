@@ -2,6 +2,7 @@ import { getProductById, getProducts } from '@/lib/products';
 import Link from 'next/link';
 import AddToCartButton from '@/components/ui/AddToCartButton';
 import { notFound } from 'next/navigation';
+import { ArrowLeft, Check, Layers } from 'lucide-react';
 
 export async function generateStaticParams() {
     const products = await getProducts();
@@ -23,71 +24,75 @@ export default async function ProductPage({ params }: ProductPageProps) {
     }
 
     return (
-        <div className="container" style={{ padding: '6rem 1rem' }}>
-            <Link href="/" style={{ color: '#888', marginBottom: '2rem', display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}>
-                <span>&larr;</span> Volver al catálogo
-            </Link>
+        <main className="min-h-screen bg-black pt-32 pb-20">
+            <div className="container px-4 md:px-6">
+                <Link href="/catalogo" className="inline-flex items-center gap-2 text-zinc-400 hover:text-white mb-8 transition-colors group">
+                    <ArrowLeft className="h-4 w-4 group-hover:-translate-x-1 transition-transform" />
+                    Back to Catalog
+                </Link>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))', gap: '4rem', alignItems: 'start' }}>
-                {/* Image Section */}
-                <div style={{
-                    background: '#1a1a1a',
-                    aspectRatio: '4/3',
-                    borderRadius: '1rem',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    border: '1px solid #333'
-                }}>
-                    <span style={{ color: '#444', fontSize: '1.5rem' }}>Vista Previa: {product.name}</span>
-                </div>
+                <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-start">
 
-                {/* Info Section */}
-                <div>
-                    <span style={{
-                        color: '#3b82f6',
-                        fontWeight: '600',
-                        marginBottom: '1rem',
-                        display: 'inline-block',
-                        background: 'rgba(59, 130, 246, 0.1)',
-                        padding: '0.25rem 0.75rem',
-                        borderRadius: '999px',
-                        fontSize: '0.875rem'
-                    }}>
-                        {product.category}
-                    </span>
-
-                    <h1 style={{ fontSize: '2.5rem', marginBottom: '1rem', lineHeight: 1.2 }}>{product.name}</h1>
-
-                    <div style={{ fontSize: '2rem', fontWeight: 'bold', marginBottom: '2rem', color: '#fff' }}>
-                        ${Number(product.price).toFixed(2)} <span style={{ fontSize: '1rem', color: '#666', fontWeight: 'normal' }}>USD</span>
+                    {/* Image Section */}
+                    <div className="relative aspect-[4/3] bg-zinc-900 rounded-2xl border border-white/5 overflow-hidden shadow-2xl shadow-blue-900/10">
+                        {/* Fallback / Preview Visual */}
+                        <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#0f111a]">
+                            <div className="absolute inset-0 opacity-20"
+                                style={{ backgroundImage: 'linear-gradient(#3b82f6 1px, transparent 1px), linear-gradient(90deg, #3b82f6 1px, transparent 1px)', backgroundSize: '30px 30px' }}
+                            />
+                            <div className="relative z-10 h-20 w-20 rounded-2xl bg-blue-600/10 flex items-center justify-center mb-4 border border-blue-500/20 shadow-[0_0_30px_rgba(59,130,246,0.2)]">
+                                <Layers className="h-10 w-10 text-blue-400" />
+                            </div>
+                            <span className="relative z-10 text-xs font-mono text-blue-500/50 uppercase tracking-widest">Product Preview</span>
+                            <p className="relative z-10 text-zinc-400 mt-2 font-medium">{product.name}</p>
+                        </div>
                     </div>
 
-                    <div style={{ marginBottom: '2.5rem', color: '#aaa', lineHeight: '1.7' }}>
-                        <h3 style={{ color: '#fff', fontSize: '1.1rem', marginBottom: '0.5rem' }}>Descripción</h3>
-                        <p>{product.description}</p>
-                    </div>
+                    {/* Info Section */}
+                    <div>
+                        <div className="inline-flex items-center px-3 py-1 rounded-full bg-blue-500/10 text-blue-400 text-xs font-bold uppercase tracking-wider mb-6 border border-blue-500/20">
+                            {product.category}
+                        </div>
 
-                    <div style={{ padding: '2rem', background: '#111', borderRadius: '1rem', border: '1px solid #333' }}>
-                        <ul style={{ marginBottom: '1.5rem', color: '#888', fontSize: '0.9rem', listStyle: 'none' }}>
-                            <li style={{ marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                                <span style={{ color: '#10b981' }}>✓</span> Descarga inmediata
-                            </li>
-                            <li style={{ marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                                <span style={{ color: '#10b981' }}>✓</span> Formato .DWG compatible
-                            </li>
-                            <li style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                                <span style={{ color: '#10b981' }}>✓</span> Soporte técnico incluido
-                            </li>
-                        </ul>
+                        <h1 className="text-4xl md:text-5xl font-bold text-white mb-6 leading-tight">
+                            {product.name}
+                        </h1>
 
-                        <AddToCartButton product={product} />
-                        <p style={{ marginTop: '1rem', textAlign: 'center', fontSize: '0.8rem', color: '#555' }}>
-                            Pago seguro procesado por PayPal
-                        </p>
+                        <div className="flex items-baseline gap-2 mb-8">
+                            <span className="text-4xl font-bold text-white">${Number(product.price).toFixed(2)}</span>
+                            <span className="text-zinc-500">USD</span>
+                        </div>
+
+                        <div className="prose prose-invert prose-blue max-w-none mb-10 text-zinc-400 leading-relaxed">
+                            <h3 className="text-white text-lg font-semibold mb-2">Description</h3>
+                            <p>{product.description}</p>
+                        </div>
+
+                        <div className="bg-zinc-900/50 border border-white/5 rounded-xl p-8 backdrop-blur-sm">
+                            <ul className="space-y-3 mb-8 text-zinc-400 text-sm">
+                                <li className="flex items-center gap-3">
+                                    <Check className="h-4 w-4 text-emerald-500" />
+                                    Instant Download
+                                </li>
+                                <li className="flex items-center gap-3">
+                                    <Check className="h-4 w-4 text-emerald-500" />
+                                    Compatible with AutoCAD 2013+
+                                </li>
+                                <li className="flex items-center gap-3">
+                                    <Check className="h-4 w-4 text-emerald-500" />
+                                    Premium Layer Standards
+                                </li>
+                            </ul>
+
+                            <AddToCartButton product={product} />
+
+                            <p className="mt-4 text-center text-xs text-zinc-600">
+                                Secure payment processing via Stripe/PayPal
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </main>
     );
 }

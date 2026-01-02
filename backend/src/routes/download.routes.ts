@@ -1,9 +1,13 @@
 import { Router } from "express";
-import { getDownloadLink } from "../controllers/download.controller";
+import { getDownloadLink, generateDownloadLink } from "../controllers/download.controller";
 
 const router = Router();
 
-// TODO: Add Auth Middleware (Clerk/JWT)
+// Generate download link for a specific product in an order
+router.post("/generate", generateDownloadLink);
+
+// Legacy route - TODO: Add Auth Middleware (Clerk/JWT)
 router.get("/:productId", getDownloadLink);
 
 export default router;
+

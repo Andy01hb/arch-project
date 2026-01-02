@@ -1,7 +1,10 @@
 import Stripe from 'stripe';
 import { OrderService } from './order.service';
+import { EmailService } from './email.service';
+import logger from '../utils/logger';
 
 const orderService = new OrderService();
+const emailService = new EmailService();
 
 export class PaymentService {
     private getStripeInstance(): Stripe {
@@ -73,6 +76,26 @@ export class PaymentService {
 
                 if (orderId) {
                     await orderService.updateOrderStatus(orderId, 'completed');
+
+                    // Send confirmation email
+                    try {
+                        const order = await orderService.getOrderById(orderId);
+                        if (order) {
+                            await emailService.sendOrderConfirmation(
+                                order.customerEmail,
+                                order.id,
+                                order.total,
+                                order.items.map(item => ({
+                                    name: item.productName,
+                                    price: item.price
+                                }))
+                            );
+                            logger.info(`Confirmation email sent for order ${orderId}`);
+                        }
+                    } catch (emailError) {
+                        logger.error(`Failed to send confirmation email for order ${orderId}:`, emailError);
+                        // Don't fail the webhook if email fails
+                    }
                 }
                 break;
 

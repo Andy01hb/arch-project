@@ -24,8 +24,10 @@ export default function CheckoutPage() {
         setIsLoading(true);
 
         try {
+            const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
+
             // 1. Create Order
-            const orderRes = await fetch('http://localhost:3001/api/orders', {
+            const orderRes = await fetch(`${apiUrl}/orders`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -44,7 +46,7 @@ export default function CheckoutPage() {
             const order = await orderRes.json();
 
             // 2. Create Payment Intent
-            const paymentRes = await fetch('http://localhost:3001/api/payment/create-payment-intent', {
+            const paymentRes = await fetch(`${apiUrl}/payment/create-payment-intent`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ orderId: order.id })

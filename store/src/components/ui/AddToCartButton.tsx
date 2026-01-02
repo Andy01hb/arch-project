@@ -3,6 +3,8 @@
 import { useCart } from '@/context/CartContext';
 import { Product } from '@/lib/products';
 import { useState } from 'react';
+import { Button } from '@/components/ui/Button';
+import { Check, ShoppingCart } from 'lucide-react';
 
 export default function AddToCartButton({ product }: { product: Product }) {
     const { addToCart } = useCart();
@@ -15,18 +17,23 @@ export default function AddToCartButton({ product }: { product: Product }) {
     };
 
     return (
-        <button
+        <Button
             onClick={handleAdd}
-            className="btn btn-primary"
-            style={{
-                width: '100%',
-                fontSize: '1.1rem',
-                padding: '1rem',
-                backgroundColor: isAdded ? '#10b981' : undefined,
-                transition: 'background-color 0.3s ease'
-            }}
+            variant={isAdded ? "outline" : "primary"}
+            size="lg"
+            className={`w-full text-base py-6 ${isAdded ? 'border-green-500 text-green-500 hover:text-green-400 hover:border-green-400' : ''}`}
         >
-            {isAdded ? '¡Añadido al Carrito!' : 'Añadir al Carrito'}
-        </button>
+            {isAdded ? (
+                <>
+                    <Check className="mr-2 h-5 w-5" />
+                    Added to Cart!
+                </>
+            ) : (
+                <>
+                    <ShoppingCart className="mr-2 h-5 w-5" />
+                    Add to Cart
+                </>
+            )}
+        </Button>
     );
 }
