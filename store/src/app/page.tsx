@@ -1,12 +1,12 @@
-import { getProducts } from '@/lib/products';
+import { getProducts, Product } from '@/lib/products';
 import ProductCard from '@/components/ui/ProductCard';
 
 // Revalidate every 60 seconds for fresh product data
 export const revalidate = 60;
 
 export default async function Home() {
-  let products = [];
-  let error = null;
+  let products: Product[] = [];
+  let error: string | null = null;
 
   try {
     products = await getProducts();
@@ -60,7 +60,18 @@ export default async function Home() {
           gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))',
           gap: '2rem'
         }}>
-          {products.length > 0 ? (
+          {error ? (
+            <div style={{
+              gridColumn: '1 / -1',
+              textAlign: 'center',
+              padding: '3rem',
+              background: '#1a1a1a',
+              borderRadius: '8px',
+              border: '1px solid #333'
+            }}>
+              <p style={{ color: '#ef4444', fontSize: '1.1rem' }}>{error}</p>
+            </div>
+          ) : products.length > 0 ? (
             products.map(product => (
               <ProductCard key={product.id} product={product} />
             ))
