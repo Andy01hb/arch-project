@@ -20,7 +20,7 @@ export default function CatalogoPage() {
         async function fetchProducts() {
             try {
                 setLoading(true);
-                const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
+                const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://arch-backend-90c5.onrender.com/api';
                 const response = await fetch(`${apiUrl}/products`);
 
                 if (!response.ok) {
@@ -95,8 +95,8 @@ export default function CatalogoPage() {
                                         key={cat}
                                         onClick={() => setSelectedCategory(cat)}
                                         className={`w-full text-left px-3 py-2 rounded-md text-sm transition-colors flex items-center justify-between group ${selectedCategory === cat
-                                                ? 'bg-blue-500/10 text-blue-400'
-                                                : 'text-zinc-400 hover:bg-zinc-900 hover:text-zinc-200'
+                                            ? 'bg-blue-500/10 text-blue-400'
+                                            : 'text-zinc-400 hover:bg-zinc-900 hover:text-zinc-200'
                                             }`}
                                     >
                                         <span className="capitalize">{cat === 'all' ? 'All Categories' : cat}</span>
